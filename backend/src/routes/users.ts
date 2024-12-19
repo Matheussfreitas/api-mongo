@@ -1,7 +1,7 @@
 import express from 'express';
 import {Request, Response} from 'express';
 import mongoose from "mongoose";
-import User, {IUser} from '../models/user.ts';
+import User, {IUser} from '../models/user';
 
 const router = express.Router();
 
@@ -60,15 +60,21 @@ router.route('/users/:id')
 .get( async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        const { fields } = req.query;
+
         if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({ err: "ID inválido" });
             return;
         }
-        const user: IUser | null = await User.findById(id);
+
+        const projection = fields ? fields.toString().split(',').join(' ') : '';
+        const user: IUser | null = await User.findById(id).select(projection);
+
         if (!user) {
             res.status(404).json({ err: "Usuário não encontrado" });
             return;
         }
+
         res.status(200).json(user);
     } catch (err) {
         res.status(500).json({ err: "Erro interno do servidor" });
