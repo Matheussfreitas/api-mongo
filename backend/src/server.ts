@@ -2,7 +2,7 @@ import express from 'express';
 import connectDB from './db';
 import userRoutes from './routes/users'
 import EntityManager from './models/entityManager';
-import RouteManager from './routeManager';
+import RouteManager from './routes/routeManager';
 
 const app = express();
 const PORT = 3001;

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import EntityManager from './models/entityManager';
+import EntityManager from '../models/entityManager';
 
 export default class RouteManager {
     private router: Router;
@@ -13,12 +13,12 @@ export default class RouteManager {
 
     private setupEntityManagementRoutes() {
         // Route to create new entity
-        this.router.post('/entities', async (req: Request, res: Response) => {
+        this.router.post('/entidades', async (req: Request, res: Response) => {
             try {
                 const entityDef = req.body;
                 const model = await this.entityManager.createEntity(entityDef);
                 this.createEntityRoutes(entityDef.name);
-                res.status(201).json({ message: `Entity ${entityDef.name} created successfully` });
+                res.status(201).json({ message: `Entidade ${entityDef.name} criada com sucesso` });
             } catch (error) {
                 res.status(400).json({ error: (error as Error).message });
             }

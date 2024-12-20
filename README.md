@@ -8,3 +8,17 @@
 - [] As rotas devem permitir projeção
 - [] Cada entidade deve ser armazenada em coleções diferentes
 - [] O usuário da API pode criar qualquer entidade
+
+
+### Exemplo de requisição
+
+```
+{
+    "name": "User",
+    "fields": {
+        "name": { "type": "string", "required": true },
+        "email": { "type": "string", "required": true, "unique": true },
+        "age": { "type": number }
+    }
+}
+```
