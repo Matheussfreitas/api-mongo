@@ -26,7 +26,13 @@ export default class RouteManager {
         })
         .get( async (req: Request, res: Response) => {
             try {
-                const entities = this.entityManager.getAllEntityNames();
+                console.log("Buscando entidades no banco de dados");
+                const entities = await this.entityManager.getAllEntityNames();
+                if (!entities) {
+                    console.log("Nenhuma entidade encontrada");
+                    return;
+                } 
+                console.log("Entidades encontradas: ", entities);
                 res.status(200).json({ entities });
             } catch (error) {
                 res.status(500).json({ error: (error as Error).message });
@@ -35,16 +41,25 @@ export default class RouteManager {
         
     }
 
+    public setupRoutesForExistingEntities() {
+        const entityNames = this.entityManager.getAllEntityNames();
+    
+        entityNames.forEach((entityName) => {
+            this.createEntityRoutes(entityName);
+        });
+    }
+    
+
     private createEntityRoutes(entityName: string) {
         const entityRouter = Router();
         const model = this.entityManager.getModel(entityName);
 
         if (!model) return;
 
-        // GET all with projection
         entityRouter.get('/', async (req: Request, res: Response) => {
             try {
                 const { fields, page, limit } = req.query;
+
                 const projection = fields
                     ? (fields as string).split(',').reduce((acc, field) => {
                         acc[field.trim()] = 1;
@@ -55,14 +70,13 @@ export default class RouteManager {
                     const pageNumber = parseInt(page as string) || 1;
                     const limitNumber = parseInt(limit as string) || 10;
                     const skip = (pageNumber - 1) * limitNumber;
+                    console.log("Buscando documentos da entidade:", entityName);
+                    const items = await model.find({}, projection).lean().skip(skip).limit(limitNumber);
             
-                    // Consulta os itens com paginação
-                    const items = await model.find({}, projection).skip(skip).limit(limitNumber);
-            
-                    // Total de documentos
                     const totalDocuments = await model.countDocuments();
             
                     res.json({
+                        entityName,
                         totalDocuments,
                         currentPage: pageNumber,
                         totalPages: Math.ceil(totalDocuments / limitNumber),

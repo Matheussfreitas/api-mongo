@@ -24,7 +24,7 @@ yarn dev
 ```
 Utilize o seguinte Endpoint local para realizar suas requisições:
 ```
-http://localhost:3001/api
+http://localhost:3001/
 ```
 
 ## Exemplos de uso
