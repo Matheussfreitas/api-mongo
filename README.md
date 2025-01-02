@@ -58,7 +58,6 @@ http://localhost:3001/
 Requisição:
 ```
 GET /users?page=2&limit=5&fields=name,email
-
 ```
 Resposta:
 ```
