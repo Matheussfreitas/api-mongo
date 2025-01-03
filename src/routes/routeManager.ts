@@ -48,7 +48,6 @@ export default class RouteManager {
             this.createEntityRoutes(entityName);
         });
     }
-    
 
     private createEntityRoutes(entityName: string) {
         const entityRouter = Router();

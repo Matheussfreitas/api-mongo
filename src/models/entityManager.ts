@@ -38,6 +38,25 @@ export default class EntityManager {
 
         return schemaField;
     }
+    async initializeModels(): Promise<void> {
+        const collections = await mongoose.connection.db!.listCollections().toArray();
+
+        for (const collection of collections) {
+            const entityName = collection.name;
+
+            // Verifica se o modelo já está registrado
+            if (this.models.has(entityName)) continue;
+
+            try {
+                // Cria o modelo com base na coleção existente
+                const schema = new mongoose.Schema({}, { strict: false });
+                const model = mongoose.model(entityName, schema);
+                this.models.set(entityName, model);
+            } catch (error: any) {
+                console.log(`Não foi possível registrar a coleção ${entityName}:`, error.message);
+            }
+        }
+    }
 
     async createEntity(entityDef: IEntityDefinition): Promise<Model<any>> {
         if (this.models.has(entityDef.name)) {
@@ -68,23 +87,4 @@ export default class EntityManager {
         return Array.from(this.models.keys());
     }
 
-    async initializeModels(): Promise<void> {
-        const collections = await mongoose.connection.db!.listCollections().toArray();
-
-        for (const collection of collections) {
-            const entityName = collection.name;
-
-            // Verifica se o modelo já está registrado
-            if (this.models.has(entityName)) continue;
-
-            try {
-                // Cria o modelo com base na coleção existente
-                const schema = new mongoose.Schema({}, { strict: false });
-                const model = mongoose.model(entityName, schema);
-                this.models.set(entityName, model);
-            } catch (error: any) {
-                console.log(`Não foi possível registrar a coleção ${entityName}:`, error.message);
-            }
-        }
-    }
 }
